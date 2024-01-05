@@ -1,26 +1,18 @@
 # dyfi.py
 
-Yksinkertainen cronjobina ajettava dy.fi domain päivitin. dyfi.py vaatii
+Yksinkertainen windowsin tehtävien ajoituksessa ajettava dy.fi domain päivitin. dyfi.py vaatii
 toimiakseen python3 ja [Requests](http://docs.python-requests.org/en/latest/)
 kirjaston
 
-## Asennus
+Oletus editori on visual studio code. Vaihda tarvittaessa vaikka notepadiin, jos et halua codea asentaa.
 
-Kloonaa dyfi.py sopivaan kansioon ja kopioi dyfi.py `/usr/bin/` hakemistoon.
+## Ensimmäinen ajo komentoriviltä domainin lisäämiseksi cfg tiedostoon
 
-```
-    $ git clone https://github.com/boarpig/dyfi.py ~/dyfi.py
-    $ sudo cp ~/dyfi.py /usr/bin/dyfi.py
-    $ sudo chmod 0755 /usr/bin/dyfi.py
-```
-
-## Käyttö lyhyesti
-
-    # dyfi.py --add
-    Käyttäjä: kalle.kayttaja@esimerkk.fi
+    # python dyfi.py --add
+    Käyttäjä: kalle.kayttaja@esimerkki.fi
     salasana: salasana123
     Domain nimi: host.dy.fi
-    # dyfi.py -u
+    # python dyfi.py -u
 
 ## Nimen lisääminen
 
@@ -37,62 +29,24 @@ muuttujaa ei ole asetettu
 
 ## Käyttö
 
-dyfi.py:n mukana tulee systemd service ja timer unit-tiedostot. 
+Luo uusi tehtävä windowsin tehtävien ajoitukseen (task scheduler)
 
-### timerin ajaminen roottina
+Anna tehtävälle nimi: dy.fi osoitteen päivitys  
+Kuvaus: Päivittää dy.fi palvelun domainin ip osoitteen  
+Suorita riippumatta siitä, onko käyttäjä kirjautunut sisään  
 
-Aseta systemd/ hakemistosta löytyvät `dyfi.service` ja `dyfi.timer` tiedostot
-`/etc/systemd/system/` hakemistoon ja aktivoi ja käynnistä timer.
+Lisää käynnistin  
+Aloita tehtävä: Ajoituksen yhteydessä  
+Asetukset: Päivittäin, Käynnistä seuraava päivä klo 00:01, Toista joka 1 päivä  
+Toistamisväli 1 tunti, kesto määrittämätön  
+Käytössä (x)  
 
-```
-# cp systemd/dyfi.{service,timer} /etc/systemd/system
-# systemctl start dyfi.timer
-```
+Luo uusi toiminto  
+Toiminto: käynnistä ohjelma  
+*Huom! esim.*  
+Ohjelma tai komentosarja: "C:\Python38\python.exe"  
+Lisää argumentteja (valinnainen): "C:\GIT\dyfi.py\dyfi.py" -u  
+*Muokkaa vastaamaan varsinaisia kohteita*  
 
-**HUOM!** Tämä olettaa, että `dyfi.py` on asennettu `/usr/bin/` hakemistoon. Jos
-`dyfi.py` on jossain muualla, muokkaa `dyfi.service` tiedoston `ExecStart=`
-osiota.
+Muihin asetuksiin ei välttämättä tarvitse koskea.
 
-### timerin ajaminen tavallisena käyttäjänä
-
-Aseta systemd/ hakemistosta löytyvät `dyfi.service` ja `dyfi.timer` tiedostot
-`~/.config/systemd/user/` hakemistoon ja aktivoi ja käynnistä timer.
-
-```
-$ cp systemd/dyfi.{service,timer} ~/.config/systemd/user/
-$ systemctl --user start dyfi.timer
-```
-
-**HUOM!** Tämä olettaa, että `dyfi.py` on asennettu `/usr/bin/` hakemistoon. Jos
-`dyfi.py` on jossain muualla, muokkaa `dyfi.service` tiedoston `ExecStart=`
-osiota.
-
-### dyfi.py:n ajaminen cronilla
-
-cronjob lisätään ajamalla
-
-    # crontab -e
-
-ja lisäämällä rivit
-
-    @reboot /usr/bin/dyfi.py -u
-    0 */4 * * * /usr/bin/dyfi.py -u
-
-Huomaa, että on suositeltavaa laittaa absoluuttinen polku dyfi.py ohjelmaan tai
-cron ei muuten välttämättä löydä sitä.
-
-Rivit tarkoittavat sitä, että dyfi päivitys tarkistetaan joka kerta kun kone
-käynnistyy, sekä neljän tunnin välein. Voit syöttää minuutti kohtaan minkä 
-vain kellonajan, mutta on suositeltavaa, että minuuttiosuus asetetaan 
-joksikin satunnaisluvuksi 0 ja 59 välillä, jotta dy.fi palvelimet eivät 
-kuormitu, jos vaikka kaikki haluavat päivittää dy.fi nimensä samaan aikaan
-tasatuntina. 
-
-On turvallista ajaa päivitysohjelma vaikka kerran tunnissa, sillä se ei ota
-yhteyttä dy.fi palvelimiin, kuin sillon, jos se kokee päivityksen
-tarpeelliseksi.
-
-Lisätietoja cronjobien tekemiseen löytyy [crontabin man-sivulta](http://manpages.debian.net/cgi-bin/man.cgi?query=crontab&sektion=5)
-tai komentorivillä
-
-    $ man 5 crontab

@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 from datetime import datetime
 import argparse
 import configparser
@@ -9,6 +6,7 @@ import logging
 import os
 import os.path
 import re
+from time import time
 import requests
 import stat
 import subprocess
@@ -17,11 +15,7 @@ logging.basicConfig(format='%(message)s', level='WARNING')
 logger = logging.getLogger("dyfi")
 logger.setLevel('INFO')
 
-if getpass.getuser() != 'root':
-    logger.error("Virhe: dyfi.py vaatii toimiakseen root oikeudet.")
-    exit(-1)
-
-configname = "/etc/dyfi.cfg"
+configname = "dyfi.cfg"
 
 config = configparser.ConfigParser()
 if not os.path.exists(configname):
@@ -31,9 +25,6 @@ if not os.path.exists(configname):
 else:
     conf_stat = os.stat(configname)
     conf_mode = stat.filemode(conf_stat.st_mode)
-    if conf_mode != '-rw-------':
-        logger.error("Asetustiedoston käyttöoikeudet virheelisiä. /etc/dyfi.cfg käyttöoikeuksien tulisi olla '-rw-------'.\nKorjataan automaattisesti.")
-        os.chmod(configname, stat.S_IRUSR | stat.S_IWUSR)
     with open(configname) as configfile:
         config.read_file(configfile)
 
@@ -140,7 +131,7 @@ elif args.edit:
     logger.info("--edit lippu käytetty")
     editor = os.environ['EDITOR']
     if not editor:
-        editor = 'nano'
+        editor = 'code'
     ret = subprocess.call([editor, configname])
 elif args.info:
     for host in config:

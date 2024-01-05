@@ -1,8 +1,0 @@
-[Unit]
-Description=dy.fi domain name updater tool
-Documentation=https://github.com/boarpig/dyfi.py
-
-[Service]
-Type=oneshot
-User=lauri
-ExecStart=/usr/bin/dyfi.py -u
