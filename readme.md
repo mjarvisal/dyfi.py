@@ -24,7 +24,7 @@ ja syötä käyttäjä, salasana ja dy.fi nimi kysyttäessä.
 
     # dyfi.py --edit
 
-dyfi.py avaa oletus editorin (ympäristömuuttuja $EDITOR) tai 'nano' jos $EDITOR
+dyfi.py avaa oletus editorin (ympäristömuuttuja $EDITOR) tai 'code' jos $EDITOR
 muuttujaa ei ole asetettu
 
 ## Käyttö
